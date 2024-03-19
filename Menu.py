@@ -9,3 +9,5 @@ for vertex_id, vertex_data in graph.vertices.items():
     print("Package Type:", vertex_data['type'])
     print("Edges:", vertex_data['edges'])
     print()
+
+
