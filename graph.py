@@ -78,4 +78,3 @@ def acceptance_probability(current_cost, new_cost, temperature):
     return exp((current_cost - new_cost) / temperature)
 
 
-

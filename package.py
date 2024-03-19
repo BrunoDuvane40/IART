@@ -23,7 +23,9 @@ class Package:
 def generate_package_stream(num_packages, map_size):
     package_types = ['fragile', 'normal', 'urgent']
 
-    package_stream = [Package(i, random.choice(package_types),(random.uniform(0, map_size), random.uniform(0, map_size))) for i in range(num_packages)]
+    package_stream = [Package(0, 'start', (0, 0))]
+
+    package_stream = package_stream + [Package(i, random.choice(package_types),(random.uniform(0, map_size), random.uniform(0, map_size))) for i in range(1,num_packages+1)]
     
     return package_stream
 
