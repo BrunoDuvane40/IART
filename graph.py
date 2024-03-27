@@ -10,7 +10,12 @@ class Graph:
 
     def add_vertex(self, vertex):
         if vertex['id'] not in self.vertices:
-            self.vertices[vertex['id']] = {'type': vertex['type'], 'edges': []}  
+            if vertex['type'] == 'urgent':
+                self.vertices[vertex['id']] = {'type': vertex['type'], 'delivery_time': vertex['delivery_time'], 'edges': []}
+            elif vertex['type'] == 'fragile':
+                self.vertices[vertex['id']] = {'type': vertex['type'], 'breaking_chance': vertex['breaking_chance'], 'breaking_cost': vertex['breaking_cost'], 'edges': []}
+            else:
+                self.vertices[vertex['id']] = {'type': vertex['type'], 'edges': []}  
     
     def add_edge(self, vertex1, vertex2, weight):
         if vertex1 in self.vertices and vertex2 in self.vertices:
@@ -25,8 +30,17 @@ def generate_graph(package_stream):
     graph = Graph()
 
     for package in package_stream:
-        vertex_info = {'id': package.id, 'type': package.package_type}  
-        graph.add_vertex(vertex_info)
+        if(package.package_type == 'urgent'):
+            vertex_info = {'id': package.id, 'type': package.package_type, 'delivery_time': package.delivery_time}
+            graph.add_vertex(vertex_info)
+        
+        elif(package.package_type == 'fragile'):
+            vertex_info = {'id': package.id, 'type': package.package_type, 'breaking_chance': package.breaking_chance, 'breaking_cost': package.breaking_cost}
+            graph.add_vertex(vertex_info)
+
+        else:
+            vertex_info = {'id': package.id, 'type': package.package_type}  
+            graph.add_vertex(vertex_info)
 
     for i, package1 in enumerate(package_stream):
         for j, package2 in enumerate(package_stream):
@@ -76,5 +90,3 @@ def acceptance_probability(current_cost, new_cost, temperature):
     if new_cost < current_cost:
         return 1.0
     return exp((current_cost - new_cost) / temperature)
-
-

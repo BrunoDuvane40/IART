@@ -18,7 +18,12 @@ class Package:
             self.delivery_time = random.uniform(100, 240) # Delivery time in minutes (100 minutes to 4 hours)
 
     def __str__(self):
-        return f"ID, {self.id},  Type: {self.package_type}, Coordinates: ({self.coordinates_x}, {self.coordinates_y})"
+        if (self.package_type == 'fragile'):
+            return f"ID, {self.id},  Type: {self.package_type}, Coordinates: ({self.coordinates_x}, {self.coordinates_y}), Breaking Chance: {self.breaking_chance}, Breaking Cost: {self.breaking_cost}"
+        elif (self.package_type == 'urgent'):
+            return f"ID, {self.id},  Type: {self.package_type}, Coordinates: ({self.coordinates_x}, {self.coordinates_y}), Delivery Time: {self.delivery_time}"
+        else:
+            return f"ID, {self.id},  Type: {self.package_type}, Coordinates: ({self.coordinates_x}, {self.coordinates_y})"
 
 def generate_package_stream(num_packages, map_size):
     package_types = ['fragile', 'normal', 'urgent']
