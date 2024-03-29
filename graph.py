@@ -249,7 +249,7 @@ def evaluation_function(graph, result, result_with_current_distanceAndTime_trave
     return cost(graph, result) * 0.3 + (total_delay_minutes * 0.3) + broken_packages_additional_cost
 
 
-def genetic_algorithm(graph, iterations):
+def genetic_algorithm(graph, iterations, heuristic):
 
     def generate_random_solution():
         vertices = list(graph.vertices.keys())
@@ -266,6 +266,29 @@ def genetic_algorithm(graph, iterations):
                 remaining_vertices.remove(vertex)
 
         return child
+    
+    def pmx(parent1, parent2):
+        start_index = random.randint(0, len(parent1)-2)
+        end_index = random.randint(start_index+1, len(parent1)-1)
+
+        child = [None] * len(parent1)
+    
+        child[start_index:end_index + 1] = parent1[start_index:end_index + 1]
+
+        for i in range(start_index, end_index + 1):
+            if parent2[i] not in child:
+                current_index = i
+                while parent2[current_index] not in child[start_index:end_index + 1]:
+                    current_index = parent1.index(parent2[current_index])
+                child[parent2.index(parent2[current_index])] = parent2[i]
+    
+        for i in range(len(child)):
+            if child[i] is None:
+                child[i] = parent2[i]
+                
+        return child
+ 
+
 
     population = [generate_random_solution() for _ in range(10)]
 
@@ -277,7 +300,11 @@ def genetic_algorithm(graph, iterations):
         while (parent1 == parent2):
             parent2 = random.choice(population)
 
-        child = crossover(parent1, parent2)
+        if heuristic == 1:
+            child = crossover(parent1, parent2)
+
+        else:
+            child = pmx(parent1, parent2)
 
         child_cost = evaluation_function(graph, child, attach_current_distanceAndTime_traveled(graph, child))
 

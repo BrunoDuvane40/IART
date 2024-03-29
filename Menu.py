@@ -18,7 +18,7 @@ simmulated_annealing_result = gr.simmulated_annealing(graph, 100, 0.01, 1000)
 
 hill_climbing_result = gr.hill_Climbing(graph, initial_solution, 10)
 
-genetic_algorithm_result = gr.genetic_algorithm(graph, 100)
+genetic_algorithm_result = gr.genetic_algorithm(graph, 100, 2)
 
 print("Simmulated Annealing Result:", simmulated_annealing_result)
 print()
