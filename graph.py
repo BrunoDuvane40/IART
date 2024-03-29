@@ -280,12 +280,12 @@ def genetic_algorithm(graph, iterations, heuristic):
                 current_index = i
                 while parent2[current_index] not in child[start_index:end_index + 1]:
                     current_index = parent1.index(parent2[current_index])
-                child[parent2.index(parent2[current_index])] = parent2[i]
+                child[current_index] = parent2[i]
     
         for i in range(len(child)):
             if child[i] is None:
                 child[i] = parent2[i]
-                
+
         return child
  
 
