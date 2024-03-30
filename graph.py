@@ -394,4 +394,11 @@ def greedy_search(graph, initial_solution):
             best_solution = current_solution.copy()
             best_cost = current_cost
 
+            
+    for j in best_solution:
+        if (j == 0):
+            best_solution.remove(j)
+
+    best_solution.insert(0, 0)
+
     return best_solution
