@@ -50,33 +50,39 @@ def generate_graph(package_stream):
     return graph
 
 
-def simmulated_annealing(graph, initial_temperature, cooling_rate, iterations):
+def simulated_annealing(graph, initial_temperature, cooling_rate, iterations):
     current_solution = list(graph.vertices.keys())
     best_solution = current_solution
     temperature = initial_temperature
+    print("Starting Simmulated Annealing with initial solution:", current_solution)
 
     for i in range(iterations):
         new_solution = current_solution.copy()
-        new_solution = swap_vertices(new_solution)
-        current_cost = cost(graph, current_solution)
-        new_cost = cost(graph, new_solution)
-        if new_cost < current_cost:
+        new_solution = perturb_solution(new_solution)  
+        current_cost = evaluation_function(graph, current_solution, attach_current_distanceAndTime_traveled(graph, current_solution))
+        new_cost = evaluation_function(graph, new_solution, attach_current_distanceAndTime_traveled(graph, new_solution))
+        
+        if new_cost < current_cost or random.random() < exp((current_cost - new_cost) / temperature):
             current_solution = new_solution
-            if new_cost < cost(graph, best_solution):
+            if new_cost < evaluation_function(graph, current_solution, attach_current_distanceAndTime_traveled(graph, current_solution)):
                 best_solution = new_solution
-        else:
-            if acceptance_probability(current_cost, new_cost, temperature) > random.random():
-                current_solution = new_solution
-        temperature *= 1 - cooling_rate
 
+        temperature *= cooling_rate  
+        
+    best_solution = [node for node in best_solution if node != 0]
     
-    for j in best_solution:
-        if (j==0):
-            best_solution.remove(j)
-    
-    best_solution.insert(0,0)
+
+    best_solution.insert(0, 0)
 
     return best_solution
+
+
+def perturb_solution(solution):
+    i, j = random.sample(range(len(solution)), 2)
+    solution[i], solution[j] = solution[j], solution[i]
+    return solution
+
+
 
 def swap_vertices(solution):
     i, j = random.sample(range(len(solution)), 2)
@@ -302,4 +308,80 @@ def genetic_algorithm(graph, iterations):
 
     return best_solution
 
+def tabu_search(graph, initial_solution, tabu_size, max_iterations):
+    current_solution = initial_solution.copy()
+    best_solution = current_solution.copy()
+    tabu_list = []
+    iteration = 0
+    no_improvement_count = 0  
 
+    while iteration < max_iterations and no_improvement_count < 50:
+        neighborhood = generate_neighbours(current_solution)
+        best_neighbor = None
+        best_neighbor_cost = float('inf')
+
+        for neighbor in neighborhood:
+            if neighbor not in tabu_list:
+                neighbor_cost = evaluation_function(graph, neighbor, attach_current_distanceAndTime_traveled(graph, neighbor))
+                if neighbor_cost < best_neighbor_cost:
+                    best_neighbor = neighbor
+                    best_neighbor_cost = neighbor_cost
+
+        if best_neighbor is None:
+            break
+
+        current_solution = best_neighbor
+        if best_neighbor_cost < evaluation_function(graph, current_solution, attach_current_distanceAndTime_traveled(graph, current_solution)):
+            best_solution = best_neighbor
+            no_improvement_count = 0
+        else:
+            no_improvement_count += 1
+
+        tabu_list.append(best_neighbor)
+        if len(tabu_list) > tabu_size:
+            tabu_list.pop(0)
+
+        iteration += 1
+
+    for j in best_solution:
+        if (j == 0):
+            best_solution.remove(j)
+
+    best_solution.insert(0, 0)
+
+    return best_solution
+
+
+def greedy_search(graph, initial_solution):
+    current_solution = initial_solution.copy()
+    best_solution = current_solution.copy()
+    best_cost = evaluation_function(graph, best_solution, attach_current_distanceAndTime_traveled(graph, best_solution))
+
+    visited = [False] * len(current_solution)
+    visited[0] = True  
+
+    while True:
+        min_distance = float('inf')
+        closest_vertex = -1
+
+        for i in range(1, len(current_solution)):
+            if not visited[i]:
+                distance_to_vertex = graph.vertices[current_solution[i]]['edges'][current_solution[i - 1]]['weight']
+                if distance_to_vertex < min_distance:
+                    min_distance = distance_to_vertex
+                    closest_vertex = i
+
+        if closest_vertex == -1:
+            break
+
+        visited[closest_vertex] = True
+
+        current_solution[0], current_solution[closest_vertex] = current_solution[closest_vertex], current_solution[0]
+
+        current_cost = evaluation_function(graph, current_solution, attach_current_distanceAndTime_traveled(graph, current_solution))
+
+        if current_cost < best_cost:
+            best_solution = current_solution.copy()
+            best_cost = current_cost
+
+    return best_solution
