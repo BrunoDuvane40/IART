@@ -358,7 +358,7 @@ def greedy_search(graph, initial_solution):
     best_cost = evaluation_function(graph, best_solution, attach_current_distanceAndTime_traveled(graph, best_solution))
 
     visited = [False] * len(current_solution)
-    visited[0] = True  
+    visited[0] = True
 
     while True:
         min_distance = float('inf')
@@ -366,10 +366,22 @@ def greedy_search(graph, initial_solution):
 
         for i in range(1, len(current_solution)):
             if not visited[i]:
-                distance_to_vertex = graph.vertices[current_solution[i]]['edges'][current_solution[i - 1]]['weight']
-                if distance_to_vertex < min_distance:
-                    min_distance = distance_to_vertex
-                    closest_vertex = i
+                current_vertex = current_solution[i]
+                prev_vertex = current_solution[i - 1]
+                
+                # Check if current and previous vertices are in the graph
+                if current_vertex in graph.vertices and prev_vertex in graph.vertices:
+                    # Check if there's an edge between the current and previous vertices
+                    edge_to_prev_vertex = next((edge for edge in graph.vertices[current_vertex]['edges'] if edge['to'] == prev_vertex), None)
+                    if edge_to_prev_vertex is not None:
+                        distance_to_vertex = edge_to_prev_vertex['weight']
+                        if distance_to_vertex < min_distance:
+                            min_distance = distance_to_vertex
+                            closest_vertex = i
+                    else:
+                        print(f"No edge found from {prev_vertex} to {current_vertex}")
+                else:
+                    print(f"Vertex {current_vertex} or {prev_vertex} not found in graph vertices.")
 
         if closest_vertex == -1:
             break
