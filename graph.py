@@ -50,8 +50,8 @@ def generate_graph(package_stream):
     return graph
 
 
-def simulated_annealing(graph, initial_temperature, cooling_rate, iterations):
-    current_solution = list(graph.vertices.keys())
+def simulated_annealing(graph, initial_temperature, cooling_rate, iterations, initial_solution):
+    current_solution = initial_solution
     best_solution = current_solution
     temperature = initial_temperature
     print("Starting Simmulated Annealing with initial solution:", current_solution)
@@ -350,55 +350,45 @@ def tabu_search(graph, initial_solution, tabu_size, max_iterations):
 
     return best_solution
 
-def greedy_search(graph, initial_solution):
-    current_solution = initial_solution.copy()
+def greedy_search(graph):
+    current_vertex = 0  # Start with the start vertex
+    current_solution = [current_vertex]  
     best_solution = current_solution.copy()
     best_cost = evaluation_function(graph, best_solution, attach_current_distanceAndTime_traveled(graph, best_solution))
 
-    visited = [False] * len(current_solution)
-    visited[0] = True
+    visited = [False] * len(graph.vertices.keys())
+    visited[current_vertex] = True  # Mark the start vertex as visited
 
-    while True:
-        min_distance = float('inf')
-        closest_vertex = -1
+    
+    while len(current_solution) < len(graph.vertices.keys()):
+        min_cost = float('inf')
+        best_vertex = -1
 
-        for i in range(1, len(current_solution)):
-            if not visited[i]:
-                current_vertex = current_solution[i]
-                prev_vertex = current_solution[i - 1]
-                
-                # Check if current and previous vertices are in the graph
-                if current_vertex in graph.vertices and prev_vertex in graph.vertices:
-                    # Check if there's an edge between the current and previous vertices
-                    edge_to_prev_vertex = next((edge for edge in graph.vertices[current_vertex]['edges'] if edge['to'] == prev_vertex), None)
-                    if edge_to_prev_vertex is not None:
-                        distance_to_vertex = edge_to_prev_vertex['weight']
-                        if distance_to_vertex < min_distance:
-                            min_distance = distance_to_vertex
-                            closest_vertex = i
-                    else:
-                        print(f"No edge found from {prev_vertex} to {current_vertex}")
-                else:
-                    print(f"Vertex {current_vertex} or {prev_vertex} not found in graph vertices.")
+        for neighbor in graph.vertices.keys():
+            vertex_id = neighbor
+            if not visited[vertex_id]:
 
-        if closest_vertex == -1:
+                current_solution.append(vertex_id)
+                current_cost = evaluation_function(graph, current_solution, attach_current_distanceAndTime_traveled(graph, current_solution))
+                current_solution.pop()
+
+                if current_cost < min_cost:
+                    min_cost = current_cost
+                    best_vertex = vertex_id
+
+        if best_vertex == -1:
             break
 
-        visited[closest_vertex] = True
+        visited[best_vertex] = True
+        current_vertex = best_vertex
+        current_solution.append(best_vertex)
 
-        current_solution[0], current_solution[closest_vertex] = current_solution[closest_vertex], current_solution[0]
-
-        current_cost = evaluation_function(graph, current_solution, attach_current_distanceAndTime_traveled(graph, current_solution))
-
-        if current_cost < best_cost:
+        if min_cost < best_cost:
             best_solution = current_solution.copy()
-            best_cost = current_cost
-
-            
-    for j in best_solution:
-        if (j == 0):
-            best_solution.remove(j)
-
-    best_solution.insert(0, 0)
+            best_cost = min_cost
+        
+        best_solution = current_solution.copy()
 
     return best_solution
+
+
