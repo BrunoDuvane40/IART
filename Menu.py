@@ -42,12 +42,12 @@ def main():
     greedy_result = gr.greedy_search(graph)
     initial_solution = greedy_result
 
-    print(graph.vertices)
 
+    print()
     print("Welcome to another day of work!, choose which algorithm you would like to use to get the best route to deliver the packages.")
     print("Remember, you can choose to see the costs of all the routes to compare, and choose the best one.")
     print("As you know from experience, the best algorithm is not always the same as they depend on the dropoff locations.")
-
+    print()
     stop = False
     while (stop==False):
 
@@ -59,6 +59,7 @@ def main():
         print("5. Simulated Annealing")
         print("6. Compare all algorithms")
         print("7. Exit")
+        print()
 
         choice = input("Enter your choice: ")
 
