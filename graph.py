@@ -54,7 +54,7 @@ def simulated_annealing(graph, initial_temperature, cooling_rate, iterations, in
     current_solution = initial_solution
     best_solution = current_solution
     temperature = initial_temperature
-    print("Starting Simmulated Annealing with initial solution:", current_solution)
+    
 
     for i in range(iterations):
         new_solution = current_solution.copy()
@@ -105,14 +105,22 @@ def acceptance_probability(current_cost, new_cost, temperature):
 
 def hill_Climbing(graph, initial_solution, iterations):
 
-    print("Starting Hill Climbing with initial solution:", initial_solution)
-    print("Initial Solution Cost:", evaluation_function(graph, initial_solution, attach_current_distanceAndTime_traveled(graph, initial_solution)))
-    print()
-    print()
-
+    
     current_solution = initial_solution
 
     best_solution = current_solution
+
+    for j in best_solution:
+        if (j==0):
+            best_solution.remove(j)
+    
+    best_solution.insert(0,0)
+
+    print("Starting Hill Climbing with initial solution:", best_solution)
+    print("Initial Solution Cost:", evaluation_function(graph, best_solution, attach_current_distanceAndTime_traveled(graph, best_solution)))
+    print()
+    print()
+
 
     best_solution_cost = evaluation_function(graph, best_solution, attach_current_distanceAndTime_traveled(graph, best_solution))
 
@@ -121,6 +129,12 @@ def hill_Climbing(graph, initial_solution, iterations):
         found_better_neighbour = False
         
         for neighbour in neighbours:
+
+            for j in neighbour:
+                if (j==0):
+                    neighbour.remove(j)
+            
+            neighbour.insert(0,0)
 
             neighbour_cost = evaluation_function(graph, neighbour, attach_current_distanceAndTime_traveled(graph, neighbour))
 
@@ -151,14 +165,6 @@ def hill_Climbing(graph, initial_solution, iterations):
 
         if not found_better_neighbour:
             break
-
-    for j in best_solution:
-        if (j==0):
-            best_solution.remove(j)
-    
-    best_solution.insert(0,0)
-                
-    print("Best Solution by hill climbing:", best_solution)
 
     return best_solution
 
@@ -210,7 +216,6 @@ def evaluation_function(graph, result, result_with_current_distanceAndTime_trave
             else:
                 total_delay_minutes += result_with_current_distanceAndTime_traveled[i][2] - graph.vertices[result_with_current_distanceAndTime_traveled[i][0]]['delivery_time']
 
-
     """
     print("Total Delay Minutes:", total_delay_minutes)
     print()
@@ -253,7 +258,19 @@ def evaluation_function(graph, result, result_with_current_distanceAndTime_trave
     return cost(graph, result) * 0.3 + (total_delay_minutes * 0.3) + broken_packages_additional_cost
 
 
-def genetic_algorithm(graph, iterations, heuristic):
+def genetic_algorithm(graph, iterations):
+
+    print()
+    print("Which heuristic would you like to use?")
+    print("1 - Crossover OX")
+    print("2 - Crossover PMX")
+    print()
+    print("Please enter the number of the heuristic you would like to use:")
+
+    heuristic = int(input())
+
+    print()
+    print()
 
     def generate_random_solution():
         vertices = list(graph.vertices.keys())
@@ -261,7 +278,10 @@ def genetic_algorithm(graph, iterations, heuristic):
         return vertices
     
     def crossover(parent1, parent2):
-        child = parent1[:6]
+
+        size_to_extract = len(parent1) // 2
+
+        child = parent1[:size_to_extract]
 
         remaining_vertices = set(parent2)-set(child)
         for vertex in parent2:
@@ -293,8 +313,13 @@ def genetic_algorithm(graph, iterations, heuristic):
         return child
  
 
+    print()
+    print("For the genetic algorithm, what population size would you like to use for each generation?")
+    print()
 
-    population = [generate_random_solution() for _ in range(10)]
+    population_size = int(input())
+
+    population = [generate_random_solution() for _ in range(population_size)]
 
     for _ in range(iterations):
         parent1 = random.choice(population)
@@ -417,5 +442,3 @@ def greedy_search(graph):
         best_solution = current_solution.copy()
 
     return best_solution
-
-

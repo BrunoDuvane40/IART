@@ -3,6 +3,7 @@ import package as pkg
 import graph as gr
 import matplotlib.pyplot as plt
 
+
 def plot_route(package_stream, route):
     """
     Plot the route on a map.
@@ -34,20 +35,41 @@ def plot_route(package_stream, route):
     plt.grid(True)
     plt.show()
 
+
 def main():
 
-    stream = pkg.generate_package_stream(10, 50)
-    graph = gr.generate_graph(stream)
-    initial_solution = list(graph.vertices.keys())
-    greedy_result = gr.greedy_search(graph)
-    initial_solution = greedy_result
-
+    
 
     print()
     print("Welcome to another day of work!, choose which algorithm you would like to use to get the best route to deliver the packages.")
     print("Remember, you can choose to see the costs of all the routes to compare, and choose the best one.")
     print("As you know from experience, the best algorithm is not always the same as they depend on the dropoff locations.")
     print()
+
+    print()
+    print("How many packages do you have to deliver today?")
+    print()
+
+    nr_packages = int(input("Enter the number of packages:"))
+
+    print("How large is the map ? (Enter maximum x and y coordinates, x and y are the same)")
+    print()
+
+
+    max = int(input("Enter the maximum value for the coordinates:"))
+    print()
+    print()
+
+    stream = pkg.generate_package_stream(nr_packages, max)
+
+    graph = gr.generate_graph(stream)
+
+    initial_solution = list(graph.vertices.keys())
+    
+    random.shuffle(initial_solution)
+
+    print("Initial Solution:", initial_solution)
+
     stop = False
     while (stop==False):
 
@@ -64,6 +86,7 @@ def main():
         choice = input("Enter your choice: ")
 
         if choice == '1':
+            greedy_result = gr.greedy_search(graph)
             greedy_result_with_timeDistance = gr.attach_current_distanceAndTime_traveled(graph, greedy_result)
             print("Greedy Result:", greedy_result)
             print()
@@ -78,7 +101,13 @@ def main():
             print()
             print()
         elif choice == '2':
-            hill_climbing_result = gr.hill_Climbing(graph, greedy_result, 10)
+
+            print()
+
+            itrs = int(input("For the hill climbing algorithm, how many iterations to look for a better solution do you want (if it reaches a local maxima it will stop): "))
+            print()
+            hill_climbing_result = gr.hill_Climbing(graph, initial_solution, itrs)
+            print()
             print("Hill Climbing Result:", hill_climbing_result)
             print()
             hill_climbing_result_with_timeDistance = gr.attach_current_distanceAndTime_traveled(graph, hill_climbing_result)
@@ -90,7 +119,15 @@ def main():
             print()
         
         elif choice == '3':
-            genetic_algorithm_result = gr.genetic_algorithm(graph, 100, 2)
+
+            print()
+            print("For the genetic algorithm, how many generations do you want to run?")
+            print()
+
+            generations = int(input("Enter the number of generations:"))
+            print()
+
+            genetic_algorithm_result = gr.genetic_algorithm(graph, generations)
             print("Genetic algorithm result:", genetic_algorithm_result)
             print()
             genetic_algorithm_result_with_timeDistance = gr.attach_current_distanceAndTime_traveled(graph, genetic_algorithm_result)
@@ -100,8 +137,29 @@ def main():
             print("Genetic algorithm result cost:", gr.evaluation_function(graph, genetic_algorithm_result, genetic_algorithm_result_with_timeDistance)) 
             print()
             print()
+
         elif choice == '4':
-            tabu_search_result = gr.tabu_search(graph, greedy_result, 10, 10)
+
+            print()
+            print("For the tabu search algorithm, how many iterations do you want to run?")
+            print()
+
+
+            iterations = int(input("Enter the number of iterations: "))
+            print()
+
+            print()
+            print("What is the size of the tabu list?")
+            print()
+
+            tabu_list_size = int(input("Enter the size of the tabu list: "))
+            print()
+
+
+            tabu_search_result = gr.tabu_search(graph, initial_solution, tabu_list_size, iterations)
+            print()
+            print()
+
             print("Tabu search result:", tabu_search_result)
             tabu_search_result_with_timeDistance = gr.attach_current_distanceAndTime_traveled(graph, tabu_search_result)
             print("Tabu search result with time and distance:", tabu_search_result_with_timeDistance)
@@ -111,8 +169,29 @@ def main():
             print()
             print()
             print() 
+
         elif choice == '5':
-            simmulated_annealing_result = gr.simulated_annealing(graph, 100, 0.01, 100, greedy_result)
+
+            print()
+            print("For the simulated annealing algorithm, how many iterations do you want to run?")
+            print()
+
+            iterations = int(input("Enter the number of iterations: "))
+            print()
+
+            print("What is the initial temperature?")
+            print()
+
+            initial_temperature = float(input("Enter the initial temperature: "))
+            print()
+
+            print("What is the cooling rate?")
+            print()
+
+            cooling_rate = float(input("Enter the cooling rate: "))
+            print()
+
+            simmulated_annealing_result = gr.simulated_annealing(graph, initial_temperature, cooling_rate, iterations, initial_solution)
             print("Simmulated Annealing Result:", simmulated_annealing_result)
             print()
             simmulated_annealing_result_with_timeDistance = gr.attach_current_distanceAndTime_traveled(graph,simmulated_annealing_result)
@@ -126,14 +205,35 @@ def main():
             print()
         
         elif choice == '6':
-            greedy_result_with_timeDistance = gr.attach_current_distanceAndTime_traveled(graph, greedy_result)
-            hill_climbing_result = gr.hill_Climbing(graph, greedy_result, 10)
+
+            greedy_result = gr.greedy_search(graph)
+            greedy_result_with_timeDistance = gr.attach_current_distanceAndTime_traveled(graph, initial_solution)
+            print()
+            itrs = int(input("For the comparisons, how many iterations to look for a better solution do you want?: "))
+            print()
+            hill_climbing_result = gr.hill_Climbing(graph, initial_solution, itrs)
             hill_climbing_result_with_timeDistance = gr.attach_current_distanceAndTime_traveled(graph, hill_climbing_result)
-            genetic_algorithm_result = gr.genetic_algorithm(graph, 100, 2)
+            genetic_algorithm_result = gr.genetic_algorithm(graph, itrs)
             genetic_algorithm_result_with_timeDistance = gr.attach_current_distanceAndTime_traveled(graph, genetic_algorithm_result)
-            tabu_search_result = gr.tabu_search(graph, greedy_result, 10, 10)
+            print()
+            print("What is the size of the tabu list?")
+            print()
+
+            tabu_list_size = int(input("Enter the size of the tabu list: "))
+            print()
+            tabu_search_result = gr.tabu_search(graph, initial_solution, tabu_list_size, itrs)
+            print()
+            print()
             tabu_search_result_with_timeDistance = gr.attach_current_distanceAndTime_traveled(graph, tabu_search_result)
-            simmulated_annealing_result = gr.simulated_annealing(graph, 100, 0.01, 100, greedy_result)
+            initial_temperature = float(input("Enter the initial temperature: "))
+            print()
+            print("What is the cooling rate?")
+            print()
+            cooling_rate = float(input("Enter the cooling rate: "))
+            print()
+            simmulated_annealing_result = gr.simulated_annealing(graph, initial_temperature, cooling_rate, itrs, initial_solution)
+            print("Simmulated Annealing Result:", simmulated_annealing_result)
+            print()
             simmulated_annealing_result_with_timeDistance = gr.attach_current_distanceAndTime_traveled(graph,simmulated_annealing_result)
 
 
@@ -171,8 +271,6 @@ def main():
 
             choice_to_show = input("So which route are you going to take? Choose a number between 1 and 5: ")
             
-            
-
             if choice_to_show == '1':
                 print("Greedy Result:", greedy_result)
                 plot_route(stream, greedy_result)
@@ -184,21 +282,25 @@ def main():
                 plot_route(stream, hill_climbing_result)
                 print()
                 continue
+
             elif choice_to_show == '3':
                 print("Genetic algorithm result:", genetic_algorithm_result)
                 plot_route(stream, genetic_algorithm_result)
                 print()
                 continue
+
             elif choice_to_show == '4':
                 print("Tabu search result:", tabu_search_result)
                 plot_route(stream, tabu_search_result)
                 print()
                 continue
+
             elif choice_to_show == '5':
                 print("Simmulated Annealing Result:", simmulated_annealing_result)
                 plot_route(stream, simmulated_annealing_result)
                 print()
                 continue
+
         elif choice == '7':
             stop = True
             print("Goodbye, have a good trip!")
