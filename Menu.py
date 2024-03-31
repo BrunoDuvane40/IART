@@ -90,7 +90,7 @@ def main():
             print()
         
         elif choice == '3':
-            genetic_algorithm_result = gr.genetic_algorithm(graph, 10)
+            genetic_algorithm_result = gr.genetic_algorithm(graph, 100, 2)
             print("Genetic algorithm result:", genetic_algorithm_result)
             print()
             genetic_algorithm_result_with_timeDistance = gr.attach_current_distanceAndTime_traveled(graph, genetic_algorithm_result)
@@ -129,12 +129,13 @@ def main():
             greedy_result_with_timeDistance = gr.attach_current_distanceAndTime_traveled(graph, greedy_result)
             hill_climbing_result = gr.hill_Climbing(graph, greedy_result, 10)
             hill_climbing_result_with_timeDistance = gr.attach_current_distanceAndTime_traveled(graph, hill_climbing_result)
-            genetic_algorithm_result = gr.genetic_algorithm(graph, 10)
+            genetic_algorithm_result = gr.genetic_algorithm(graph, 100, 2)
             genetic_algorithm_result_with_timeDistance = gr.attach_current_distanceAndTime_traveled(graph, genetic_algorithm_result)
             tabu_search_result = gr.tabu_search(graph, greedy_result, 10, 10)
             tabu_search_result_with_timeDistance = gr.attach_current_distanceAndTime_traveled(graph, tabu_search_result)
             simmulated_annealing_result = gr.simulated_annealing(graph, 100, 0.01, 100, greedy_result)
             simmulated_annealing_result_with_timeDistance = gr.attach_current_distanceAndTime_traveled(graph,simmulated_annealing_result)
+
 
             print("Greedy Result:", greedy_result)
             print("Greedy Cost:", gr.evaluation_function(graph, greedy_result, greedy_result_with_timeDistance))
