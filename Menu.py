@@ -38,8 +38,6 @@ def plot_route(package_stream, route):
 
 def main():
 
-    
-
     print()
     print("Welcome to another day of work!, choose which algorithm you would like to use to get the best route to deliver the packages.")
     print("Remember, you can choose to see the costs of all the routes to compare, and choose the best one.")

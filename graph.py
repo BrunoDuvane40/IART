@@ -1,4 +1,4 @@
-
+import time 
 import random
 
 from math import exp
@@ -51,6 +51,9 @@ def generate_graph(package_stream):
 
 
 def simulated_annealing(graph, initial_temperature, cooling_rate, iterations, initial_solution):
+
+    time_1 = time.time()   
+
     current_solution = initial_solution
     best_solution = current_solution
     temperature = initial_temperature
@@ -62,17 +65,22 @@ def simulated_annealing(graph, initial_temperature, cooling_rate, iterations, in
         current_cost = evaluation_function(graph, current_solution, attach_current_distanceAndTime_traveled(graph, current_solution))
         new_cost = evaluation_function(graph, new_solution, attach_current_distanceAndTime_traveled(graph, new_solution))
         
-        if new_cost < current_cost or random.random() < exp((current_cost - new_cost) / temperature):
-            current_solution = new_solution
-            if new_cost < evaluation_function(graph, current_solution, attach_current_distanceAndTime_traveled(graph, current_solution)):
-                best_solution = new_solution
+        if(temperature != 0):
+            if new_cost < current_cost or random.random() < exp((current_cost - new_cost) / temperature):
+                current_solution = new_solution
+                if new_cost < evaluation_function(graph, current_solution, attach_current_distanceAndTime_traveled(graph, current_solution)):
+                    best_solution = new_solution
 
-        temperature *= cooling_rate  
+            temperature *= cooling_rate  
         
     best_solution = [node for node in best_solution if node != 0]
     
 
     best_solution.insert(0, 0)
+
+    time_2 = time.time()
+
+    print("Simulated Annealing Finished in ", time_2 - time_1, " seconds")
 
     return best_solution
 
@@ -105,6 +113,7 @@ def acceptance_probability(current_cost, new_cost, temperature):
 
 def hill_Climbing(graph, initial_solution, iterations):
 
+    time_1 = time.time()
     
     current_solution = initial_solution
 
@@ -165,6 +174,10 @@ def hill_Climbing(graph, initial_solution, iterations):
 
         if not found_better_neighbour:
             break
+
+    time_2 = time.time()
+
+    print("Hill Climbing Finished in ", time_2 - time_1, " seconds")
 
     return best_solution
 
@@ -313,27 +326,28 @@ def genetic_algorithm(graph, iterations):
         return child
  
 
+    if heuristic == 1:
+        crossover_function = crossover
+    else:
+        crossover_function = pmx
+
     print()
     print("For the genetic algorithm, what population size would you like to use for each generation?")
     print()
 
+    
+
     population_size = int(input())
+
+    time_1 = time.time()
 
     population = [generate_random_solution() for _ in range(population_size)]
 
     for _ in range(iterations):
-        parent1 = random.choice(population)
+        
+        parent1, parent2 = random.sample(population, 2)
 
-        parent2 = random.choice(population)
-
-        while (parent1 == parent2):
-            parent2 = random.choice(population)
-
-        if heuristic == 1:
-            child = crossover(parent1, parent2)
-
-        else:
-            child = pmx(parent1, parent2)
+        child = crossover_function(parent1, parent2)
 
         child_cost = evaluation_function(graph, child, attach_current_distanceAndTime_traveled(graph, child))
 
@@ -356,10 +370,17 @@ def genetic_algorithm(graph, iterations):
     
     best_solution.insert(0,0)
 
+    time_2 = time.time()
+
+    print("Genetic Algorithm Finished in ", time_2 - time_1, " seconds")
+
     return best_solution
 
 
 def tabu_search(graph, initial_solution, tabu_size, max_iterations):
+
+    time_1 = time.time()
+
     current_solution = initial_solution.copy()
     best_solution = current_solution.copy()
     tabu_list = []
@@ -400,9 +421,15 @@ def tabu_search(graph, initial_solution, tabu_size, max_iterations):
 
     best_solution.insert(0, 0)
 
+    time_2 = time.time()
+
+    print("Tabu Search Finished in ", time_2 - time_1, " seconds")
+
     return best_solution
 
 def greedy_search(graph):
+    time_1 = time.time()
+
     current_vertex = 0  # Start with the start vertex
     current_solution = [current_vertex]  
     best_solution = current_solution.copy()
@@ -440,5 +467,9 @@ def greedy_search(graph):
             best_cost = min_cost
         
         best_solution = current_solution.copy()
+    
+    time_2 = time.time()
+
+    print("Greedy Search Finished in ", time_2 - time_1, " seconds")
 
     return best_solution
