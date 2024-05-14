@@ -348,7 +348,7 @@ def genetic_algorithm(graph, iterations):
         parent1, parent2 = random.sample(population, 2)
 
         child = crossover_function(parent1, parent2)
-
+  
         child_cost = evaluation_function(graph, child, attach_current_distanceAndTime_traveled(graph, child))
 
         worst_index = 0
